@@ -1,3 +1,6 @@
+import Enemy from '../Enemy/enemy'
+import Board from '../Board/board'
+
 type Options = {
     x: number
     y: number

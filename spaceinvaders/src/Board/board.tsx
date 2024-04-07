@@ -28,8 +28,8 @@ export default class Board {
                 (laserRight >= enemyLeft && laserRight <= enemyRight))
         ) {
             console.log('Hitmarker')
-            return false
+            return true
         }
-        return true
+        return false
     }
 }
