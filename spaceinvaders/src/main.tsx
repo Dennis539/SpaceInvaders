@@ -2,6 +2,7 @@ import Player from './Player/player'
 import Enemy from './Enemy/enemy'
 import Board from './Board/board'
 import Laser from './Laser/laser'
+import EnemyHorde from './Enemy/enemyHorde'
 
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
@@ -27,45 +28,22 @@ const player1 = new Player({
     speed: 5
 })
 
-function createEnemies() {
-    let enemiesArray: Array<Array<Enemy>> = []
-    var xStart = 100
-    var yStart = 0
-    for (let i = 0; i < 5; i++) {
-        enemiesArray.push([])
-
-        for (let j = 0; j < 10; j++) {
-            enemiesArray[i].push(
-                new Enemy({
-                    x: xStart,
-                    y: yStart,
-                    width: 30,
-                    height: 30,
-                    speed: 5
-                })
-            )
-            xStart += 100
-        }
-        yStart += 50
-        xStart = 100
-    }
-    return enemiesArray
-}
-
-let enemies: Array<Array<Enemy>> = createEnemies()
+let enemies: Array<EnemyHorde> = [new EnemyHorde()]
 let laserRays: Array<Laser> = []
 
 function drawBoxPlayer(player1: Player) {
     c!.fillStyle = '#000000'
     c?.fillRect(player1.x, player1.y, player1.width, player1.height)
 }
-function drawBoxEnemies(enemies: Array<Array<Enemy>>) {
+function drawBoxEnemies(enemies: Array<EnemyHorde>) {
     c!.fillStyle = '#F050F0'
-    enemies.map((enemyArray) =>
-        enemyArray.map(
-            (enemy) =>
-                enemy &&
-                c?.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+    enemies.map((enemyHorde) =>
+        enemyHorde.enemiesMatrix.map((enemyArray) =>
+            enemyArray.map(
+                (enemy) =>
+                    enemy &&
+                    c?.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+            )
         )
     )
 }
@@ -114,122 +92,77 @@ function updateLasers(laserCounter: number, player1: Player) {
     return laserCounter + 1
 }
 
-function edgeEnemies(enemyDirection: string) {
-    var directionEnemies = enemies.map(
-        (enemiesArray) =>
-            enemiesArray[enemyDirection === 'right' ? enemies[0].length - 1 : 0]
-    )
+function updateEnemies() {
+    for (let enemyHorde of enemies) {
+        if (enemyHorde.direction === 'right') {
+            if (enemyHorde.checkHordeRightExists()) {
+                enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map(
+                    (enemyArray) => enemyArray.slice(0, -1)
+                )
+                continue
+            }
+            var rightEnemy = enemyHorde.edgeEnemyHorde()
 
-    function checkMaxOrMin(
-        curVal: Enemy,
-        highestVal: Enemy,
-        enemyDirection: string
-    ) {
-        if (!curVal && !highestVal) {
-            return highestVal
-        } else if (!curVal) {
-            return highestVal
-        } else if (!highestVal) {
-            return curVal
-        } else if (enemyDirection === 'right') {
-            return highestVal.x < curVal.x ? curVal : highestVal
-        } else {
-            return highestVal.x > curVal.x ? curVal : highestVal
+            if (
+                rightEnemy &&
+                rightEnemy.x + rightEnemy.width >
+                    board.boundaryRight - rightEnemy.speed
+            ) {
+                enemyHorde.moveHordeDown()
+                enemyHorde.direction = 'left'
+            } else {
+                enemyHorde.moveHordeRight()
+            }
+        } else if (enemyHorde.direction === 'left') {
+            if (enemyHorde.checkHordeLeftExists()) {
+                enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map(
+                    (enemyArray) => enemyArray.slice(1)
+                )
+                continue
+            }
+            var leftEnemy = enemyHorde.edgeEnemyHorde()
+
+            if (
+                leftEnemy &&
+                leftEnemy.x < board.boundaryLeft + leftEnemy.speed
+            ) {
+                enemyHorde.moveHordeDown()
+                enemyHorde.direction = 'right'
+            } else {
+                enemyHorde.moveHordeLeft()
+            }
         }
+        return enemies
     }
-
-    var directionEnemy = directionEnemies.reduce((highestVal, curVal) =>
-        checkMaxOrMin(highestVal, curVal, enemyDirection)
-    )
-    return directionEnemy
-}
-
-function updateEnemies(enemyDirection: string) {
-    if (enemyDirection === 'right') {
-        if (
-            enemies.every(
-                (enemyArray) => enemyArray[enemyArray.length - 1] === null
-            )
-        ) {
-            enemies = enemies.map((enemyArray) => enemyArray.slice(0, -1))
-            return enemies
-        }
-        var rightEnemy = edgeEnemies(enemyDirection)
-
-        if (
-            rightEnemy.x + rightEnemy.width >
-            board.boundaryRight - rightEnemy.speed
-        ) {
-            enemies.map((enemyArray) =>
-                enemyArray.map((enemy) => (enemy ? (enemy.y += 5) : null))
-            )
-            board.enemyDirection = 'left'
-        } else {
-            enemies.map((enemyArray) =>
-                enemyArray.map((enemy) => (enemy ? (enemy.x += 1) : null))
-            )
-        }
-    } else if (enemyDirection === 'left') {
-        if (enemies.every((enemyArray) => enemyArray[0] === null)) {
-            enemies = enemies.map((enemyArray) => enemyArray.slice(1))
-            return enemies
-        }
-        var leftEnemy = edgeEnemies(enemyDirection)
-        console.log(leftEnemy)
-
-        if (leftEnemy.x < board.boundaryLeft + leftEnemy.speed) {
-            enemies.map((enemyArray) =>
-                enemyArray.map((enemy) => (enemy ? (enemy.y += 5) : null))
-            )
-            board.enemyDirection = 'right'
-        } else {
-            enemies.map((enemyArray) =>
-                enemyArray.map((enemy) => (enemy ? (enemy.x -= 1) : null))
-            )
-        }
-    }
-    return enemies
-}
-
-function checkLaserCollision(i: number, j: number) {
-    const anyCollision = laserRays.some((laser) =>
-        board.checkCollision(enemies[i][j], laser)
-    )
-    if (anyCollision) {
-        console.log('collide')
-        laserRays = laserRays.filter(
-            (laser) => !board.checkCollision(enemies[i][j], laser)
-        )
-        return { collision: true, lasers: laserRays }
-    }
-    return { collision: false, lasers: laserRays }
 }
 
 function collision(laserRays: Array<Laser>) {
     if (laserRays.length !== 0) {
-        for (let i = 0; i < enemies.length; i++) {
-            for (let j = 0; j < enemies[i].length; j++) {
-                if (!!enemies[i][j]) {
-                    const values = checkLaserCollision(i, j)
-                    const collide = values.collision
-                    laserRays = values.lasers
-                    if (collide) {
-                        enemies[i][j] = null
-                    }
-                }
+        for (let enemyHorde of enemies) {
+            laserRays = enemyHorde.checkHordeLaserCollision(laserRays, board)
+            if (laserRays.length === 0) {
+                return laserRays
             }
         }
     }
+    return laserRays
 }
 
 let laserCounter = 200
+let swarmTimer = 0
+let swarmInterval = 1000
 
 function loop() {
     updatePlayer()
     laserCounter = updateLasers(laserCounter, player1)
 
-    enemies = updateEnemies(board.enemyDirection)
-    collision(laserRays)
+    updateEnemies()
+    laserRays = collision(laserRays)
+    swarmTimer += 1
+    if (swarmTimer === swarmInterval) {
+        enemies.push(new EnemyHorde())
+        swarmTimer = 0
+    }
     draw()
     window.requestAnimationFrame(loop)
 }
