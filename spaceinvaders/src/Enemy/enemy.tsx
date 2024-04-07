@@ -7,6 +7,7 @@ type Options = {
     width: number
     height: number
     speed: number
+    shootChance: number
 }
 
 export default class Enemy {
@@ -16,6 +17,7 @@ export default class Enemy {
     height: number
     speed: number
     direction: string
+    shootChance: number
     constructor(options: Options) {
         this.x = options.x
         this.y = options.y
@@ -23,6 +25,7 @@ export default class Enemy {
         this.height = options.height
         this.speed = options.speed
         this.direction = 'right'
+        this.shootChance = options.shootChance
     }
 
     checkLaserCollision(laserRays: Array<Laser>, board: Board) {
@@ -31,13 +34,20 @@ export default class Enemy {
         )
         if (anyCollision) {
             console.log('collide')
-            console.log(laserRays)
             laserRays = laserRays.filter(
                 (laser) => !board.checkCollision(this, laser)
             )
-            console.log(laserRays)
             return { collision: true, lasers: laserRays }
         }
         return { collision: false, lasers: laserRays }
+    }
+
+    shootLaser() {
+        // console.log(Math.floor(Math.random() * 1002), this.shootChance)
+        if (Math.floor(Math.random() * 1002) >= this.shootChance) {
+            console.log('Kees')
+            return true
+        }
+        return false
     }
 }

@@ -30,6 +30,7 @@ const player1 = new Player({
 
 let enemies: Array<EnemyHorde> = [new EnemyHorde()]
 let laserRays: Array<Laser> = []
+let laserRaysEnemy: Array<Laser> = []
 
 function drawBoxPlayer(player1: Player) {
     c!.fillStyle = '#000000'
@@ -48,11 +49,11 @@ function drawBoxEnemies(enemies: Array<EnemyHorde>) {
     )
 }
 
-function drawLasers(laserRays: Array<Laser>) {
+function drawLasers(lasers: Array<Laser>) {
     c!.fillStyle = '#c30010'
 
-    laserRays &&
-        laserRays.map((laser) =>
+    lasers &&
+        lasers.map((laser) =>
             c?.fillRect(laser.x, laser.y, laser.width, laser.height)
         )
 }
@@ -60,8 +61,9 @@ function drawLasers(laserRays: Array<Laser>) {
 function draw() {
     c?.clearRect(0, 0, canvas.width, canvas.height)
     drawBoxPlayer(player1)
-    drawBoxEnemies(enemies)
+    enemies && drawBoxEnemies(enemies)
     laserRays && drawLasers(laserRays)
+    laserRaysEnemy && drawLasers(laserRaysEnemy)
 }
 
 function updatePlayer() {
@@ -76,7 +78,7 @@ function checkLaserOffScreen(laser: Laser) {
 }
 
 function updateLasers(laserCounter: number, player1: Player) {
-    if (' ' in keys && laserCounter > 20) {
+    if (' ' in keys && laserCounter > 10) {
         laserRays.push(
             new Laser({
                 x: player1.x + player1.width / 2,
@@ -88,6 +90,7 @@ function updateLasers(laserCounter: number, player1: Player) {
     }
 
     laserRays && laserRays.map((laser) => (laser.y -= 10))
+    laserRaysEnemy && laserRaysEnemy.map((laser) => (laser.y += 10))
     laserRays = laserRays.filter((laser) => checkLaserOffScreen(laser))
     return laserCounter + 1
 }
@@ -132,7 +135,11 @@ function updateEnemies() {
                 enemyHorde.moveHordeLeft()
             }
         }
-        return enemies
+
+        laserRaysEnemy = enemyHorde.shootLasers(laserRaysEnemy)
+        if (laserRaysEnemy.length !== 0) {
+            console.log(laserRaysEnemy)
+        }
     }
 }
 
@@ -148,9 +155,10 @@ function collision(laserRays: Array<Laser>) {
     return laserRays
 }
 
-let laserCounter = 200
+let laserCounter = 1
 let swarmTimer = 0
 let swarmInterval = 1000
+let shootChance = 1000
 
 function loop() {
     updatePlayer()

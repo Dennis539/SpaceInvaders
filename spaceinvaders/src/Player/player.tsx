@@ -13,6 +13,7 @@ export default class Player {
     height: number
     speed: number
     direction: string
+    health: number
     constructor(options: Options) {
         this.x = options.x
         this.y = options.y
@@ -20,6 +21,7 @@ export default class Player {
         this.height = options.height
         this.speed = options.speed
         this.direction = 'right'
+        this.health = 10
     }
 
     move(keys: any, canvas: any) {

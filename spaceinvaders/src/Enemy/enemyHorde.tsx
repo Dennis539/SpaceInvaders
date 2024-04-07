@@ -4,9 +4,17 @@ import Board from '../Board/board'
 export default class EnemyHorde {
     direction: string
     enemiesMatrix: Array<Array<Enemy | null>>
+    shootChance: number
     constructor() {
         this.direction = 'right'
+        this.shootChance = 1001
         this.enemiesMatrix = this.createEnemies()
+    }
+
+    setShootChance() {
+        if (this.shootChance > 500) {
+            this.shootChance -= 100
+        }
     }
 
     createEnemies() {
@@ -17,13 +25,15 @@ export default class EnemyHorde {
             enemiesMatrix.push([])
 
             for (let j = 0; j < 10; j++) {
+                console.log(this.shootChance)
                 enemiesMatrix[i].push(
                     new Enemy({
                         x: xStart,
                         y: yStart,
                         width: 30,
                         height: 30,
-                        speed: 5
+                        speed: 5,
+                        shootChance: this.shootChance
                     })
                 )
                 xStart += 100
@@ -70,7 +80,6 @@ export default class EnemyHorde {
         for (let i = 0; i < this.enemiesMatrix.length; i++) {
             for (let j = 0; j < this.enemiesMatrix[i].length; j++) {
                 if (this.enemiesMatrix[i][j]) {
-                    // console.log(laserRays)
                     const values = this.enemiesMatrix[i][
                         j
                     ]!.checkLaserCollision(laserRays, board)
@@ -83,6 +92,32 @@ export default class EnemyHorde {
             }
         }
         return laserRays
+    }
+
+    shootLasers(laserRaysEnemy: Array<Laser>) {
+        for (let matrixArray of this.enemiesMatrix) {
+            for (let i = 0; i < matrixArray.length - 1; i++) {
+                if (
+                    matrixArray[i] !== null &&
+                    (matrixArray[i + 1] === null ||
+                        i === matrixArray.length - 2)
+                ) {
+                    if (matrixArray[i]!.shootLaser()) {
+                        const xLaser =
+                            matrixArray[i]!.x + matrixArray[i]!.width / 2
+                        console.log(xLaser)
+                        laserRaysEnemy.push(
+                            new Laser({
+                                x: xLaser,
+                                y: matrixArray[i]!.y,
+                                speed: 10
+                            })
+                        )
+                    }
+                }
+            }
+        }
+        return laserRaysEnemy
     }
 
     moveHordeRight() {
