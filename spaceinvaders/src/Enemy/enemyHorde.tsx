@@ -7,7 +7,7 @@ export default class EnemyHorde {
     shootChance: number
     constructor() {
         this.direction = 'right'
-        this.shootChance = 1001
+        this.shootChance = 200
         this.enemiesMatrix = this.createEnemies()
     }
 

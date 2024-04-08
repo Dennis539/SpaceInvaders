@@ -43,9 +43,10 @@ export default class Enemy {
     }
 
     shootLaser() {
-        // console.log(Math.floor(Math.random() * 1002), this.shootChance)
-        if (Math.floor(Math.random() * 1002) >= this.shootChance) {
-            console.log('Kees')
+        if (
+            Math.floor(Math.random() * (this.shootChance + 2)) >=
+            this.shootChance
+        ) {
             return true
         }
         return false
