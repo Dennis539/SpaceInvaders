@@ -1,3 +1,6 @@
+import Laser from "../Laser/laser"
+import Board from "../Board/board"
+
 type Options = {
     x: number
     y: number
@@ -51,7 +54,6 @@ export default class Player {
             this.direction = 'up'
         }
         if ('ArrowDown' in keys) {
-            console.log(this.y, canvas.height)
             if (this.y + this.height <= canvas.height - this.speed) {
                 this.y += this.speed
             } else {
@@ -60,5 +62,20 @@ export default class Player {
 
             this.direction = 'down'
         }
+    }
+
+    checkLaserCollision(laserRays: Array<Laser>, board: Board) {
+        const anyCollision = laserRays.some((laser) =>
+            board.checkCollision(this, "isPlayer", laser)
+        )
+        if (anyCollision) {
+            console.log('collide')
+            laserRays = laserRays.filter(
+                (laser) => !board.checkCollision(this, "isPlayer", laser)
+            )
+            this.health -= 1
+            return laserRays
+        }
+        return laserRays
     }
 }

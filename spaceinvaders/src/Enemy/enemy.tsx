@@ -30,12 +30,12 @@ export default class Enemy {
 
     checkLaserCollision(laserRays: Array<Laser>, board: Board) {
         const anyCollision = laserRays.some((laser) =>
-            board.checkCollision(this, laser)
+            board.checkCollision(this, "isEnemy", laser)
         )
         if (anyCollision) {
             console.log('collide')
             laserRays = laserRays.filter(
-                (laser) => !board.checkCollision(this, laser)
+                (laser) => !board.checkCollision(this, "isEnemy", laser)
             )
             return { collision: true, lasers: laserRays }
         }

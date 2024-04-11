@@ -25,7 +25,6 @@ export default class EnemyHorde {
             enemiesMatrix.push([])
 
             for (let j = 0; j < 10; j++) {
-                console.log(this.shootChance)
                 enemiesMatrix[i].push(
                     new Enemy({
                         x: xStart,
@@ -105,7 +104,6 @@ export default class EnemyHorde {
                     if (matrixArray[i]!.shootLaser()) {
                         const xLaser =
                             matrixArray[i]!.x + matrixArray[i]!.width / 2
-                        console.log(xLaser)
                         laserRaysEnemy.push(
                             new Laser({
                                 x: xLaser,

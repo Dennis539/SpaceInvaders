@@ -1,5 +1,6 @@
 import Laser from '../Laser/laser'
 import Enemy from '../Enemy/enemy'
+import Player from '../Player/player'
 
 export default class Board {
     boundaryUp: number
@@ -15,19 +16,30 @@ export default class Board {
         this.enemyDirection = 'right'
     }
 
-    checkCollision(enemy: Enemy, laser: Laser) {
-        const enemyLeft = enemy.x
-        const enemyRight = enemy.x + enemy.width
-        const enemyBottom = enemy.y + enemy.height
+    checkCollision(target: Enemy | Player, targetType: string,  laser: Laser) {
+        const targetLeft = target.x
+        const targetRight = target.x + target.width
+        const targetBottom = target.y + target.height
+        const targetTop = target.y
         const laserLeft = laser.x
         const laserRight = laser.x + laser.width
+        const laserBottom = laser.y + laser.height
         const laserTop = laser.y
-        if (
-            laserTop <= enemyBottom &&
-            ((laserLeft <= enemyRight && laserLeft >= enemyLeft) ||
-                (laserRight >= enemyLeft && laserRight <= enemyRight))
+
+        if (targetType === "isEnemy" &&
+            laserTop <= targetBottom &&
+            ((laserLeft <= targetRight && laserLeft >= targetLeft) ||
+                (laserRight >= targetLeft && laserRight <= targetRight))
         ) {
             console.log('Hitmarker')
+            return true
+        } else if (targetType === "isPlayer" &&
+            laserBottom >= targetTop &&
+            laserTop <= targetBottom &&
+            ((laserLeft <= targetRight && laserLeft >= targetLeft) ||
+                (laserRight >= targetLeft && laserRight <= targetRight))
+        ) {
+            console.log("Player hit")
             return true
         }
         return false

@@ -51,7 +51,6 @@ function drawBoxEnemies(enemies: Array<EnemyHorde>) {
 
 function drawLasers(lasers: Array<Laser>) {
     c!.fillStyle = '#c30010'
-
     lasers &&
         lasers.map((laser) =>
             c?.fillRect(laser.x, laser.y, laser.width, laser.height)
@@ -64,6 +63,8 @@ function draw() {
     enemies && drawBoxEnemies(enemies)
     laserRays && drawLasers(laserRays)
     laserRaysEnemy && drawLasers(laserRaysEnemy)
+    if (c) { c.font = "48px serif" }
+    c?.fillText(`${player1.health}`, 100, 50, 100)
 }
 
 function updatePlayer() {
@@ -137,9 +138,9 @@ function updateEnemies() {
         }
 
         laserRaysEnemy = enemyHorde.shootLasers(laserRaysEnemy)
-        if (laserRaysEnemy.length !== 0) {
-            console.log(laserRaysEnemy)
-        }
+        // if (laserRaysEnemy.length !== 0) {
+        //     console.log(laserRaysEnemy)
+        // }
     }
 }
 
@@ -165,6 +166,9 @@ function loop() {
     laserCounter = updateLasers(laserCounter, player1)
 
     updateEnemies()
+    if (laserRaysEnemy.length !== 0) {
+        laserRaysEnemy = player1.checkLaserCollision(laserRaysEnemy, board)
+    }
     laserRays = collision(laserRays)
     swarmTimer += 1
     if (swarmTimer === swarmInterval) {
