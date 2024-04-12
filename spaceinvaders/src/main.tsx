@@ -138,9 +138,7 @@ function updateEnemies() {
         }
 
         laserRaysEnemy = enemyHorde.shootLasers(laserRaysEnemy)
-        // if (laserRaysEnemy.length !== 0) {
-        //     console.log(laserRaysEnemy)
-        // }
+
     }
 }
 
