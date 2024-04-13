@@ -4,6 +4,7 @@ import Board from './Board/board'
 import Laser from './Laser/laser'
 import EnemyHorde from './Enemy/enemyHorde'
 import Stars from './Stars/stars'
+import Particle from './Particle/particle'
 
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
@@ -48,7 +49,6 @@ function drawBoxEnemies(enemies: Array<EnemyHorde>) {
             enemyArray.map(
                 (enemy) =>
                     enemy &&
-                    // c?.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
                     c?.drawImage(enemy.image, enemy.x, enemy.y, enemy.width, enemy.height)
 
             )
@@ -85,9 +85,21 @@ function drawLasers(lasers: Array<Laser>) {
     
     lasers &&
         lasers.map((laser) =>
-        // c?.fillRect(laser.x, laser.y, laser.width, laser.height)
-        c?.drawImage(laser.image, laser.x, laser.y, laser.width, laser.height * 2)
+            c?.drawImage(laser.image, laser.x, laser.y, laser.width, laser.height * 2)
         )
+}
+
+function drawExplosions() {
+    var explosions = board.explosions
+    for (let explosion of explosions) {
+        explosion.forEach((particle,i) => {
+            if (particle.alpha <= 0) {
+                explosion.splice(i,1)
+            } else {
+                particle.update(c)
+            }
+        });
+    }
 }
 
 function draw() {
@@ -100,9 +112,11 @@ function draw() {
     enemies && drawBoxEnemies(enemies)
     laserRays && drawLasers(laserRays)
     laserRaysEnemy && drawLasers(laserRaysEnemy)
+    board.explosions && drawExplosions()
 
     if (c) { c.font = "48px serif" }
     c?.fillText(`${player1.health}`, 100, 50, 100)
+    c?.fillText(`${player1.score}`, 100, canvas.height - 50, 100)
 }
 
 function updatePlayer() {
@@ -184,7 +198,7 @@ function updateEnemies() {
 function collision(laserRays: Array<Laser>) {
     if (laserRays.length !== 0) {
         for (let enemyHorde of enemies) {
-            laserRays = enemyHorde.checkHordeLaserCollision(laserRays, board)
+            laserRays = enemyHorde.checkHordeLaserCollision(laserRays, board, player1)
             if (laserRays.length === 0) {
                 return laserRays
             }

@@ -1,6 +1,7 @@
 import Enemy from './enemy'
 import Laser from '../Laser/laser'
 import Board from '../Board/board'
+import Player from '../Player/player'
 export default class EnemyHorde {
     direction: string
     enemiesMatrix: Array<Array<Enemy | null>>
@@ -75,17 +76,17 @@ export default class EnemyHorde {
         return edgiestEnemy
     }
 
-    checkHordeLaserCollision(laserRays: Array<Laser>, board: Board) {
+    checkHordeLaserCollision(laserRays: Array<Laser>, board: Board, player1: Player) {
         for (let i = 0; i < this.enemiesMatrix.length; i++) {
             for (let j = 0; j < this.enemiesMatrix[i].length; j++) {
-                if (this.enemiesMatrix[i][j]) {
-                    const values = this.enemiesMatrix[i][
-                        j
-                    ]!.checkLaserCollision(laserRays, board)
+                var enemy = this.enemiesMatrix[i][j]
+                if (enemy) {
+                    const values = enemy!.checkLaserCollision(laserRays, board)
                     const collide = values.collision
                     laserRays = values.lasers
                     if (collide) {
                         this.enemiesMatrix[i][j] = null
+                        player1.score += 100
                     }
                 }
             }
