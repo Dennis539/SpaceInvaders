@@ -108,7 +108,8 @@ export default class EnemyHorde {
                             new Laser({
                                 x: xLaser,
                                 y: matrixArray[i]!.y,
-                                speed: 10
+                                speed: 10,
+                                shooter: "enemy"
                             })
                         )
                     }

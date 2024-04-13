@@ -18,6 +18,7 @@ export default class Enemy {
     speed: number
     direction: string
     shootChance: number
+    image: HTMLImageElement
     constructor(options: Options) {
         this.x = options.x
         this.y = options.y
@@ -26,6 +27,9 @@ export default class Enemy {
         this.speed = options.speed
         this.direction = 'right'
         this.shootChance = options.shootChance
+        const image = new Image()
+        image.src = "Invader.png"
+        this.image = image
     }
 
     checkLaserCollision(laserRays: Array<Laser>, board: Board) {

@@ -3,6 +3,7 @@ import Enemy from './Enemy/enemy'
 import Board from './Board/board'
 import Laser from './Laser/laser'
 import EnemyHorde from './Enemy/enemyHorde'
+import Stars from './Stars/stars'
 
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
@@ -23,19 +24,23 @@ const board = new Board(canvas)
 const player1 = new Player({
     x: canvas.width / 2,
     y: canvas.height - 200,
-    width: 30,
-    height: 100,
+    width: 50,
+    height: 50,
     speed: 5
 })
 
 let enemies: Array<EnemyHorde> = [new EnemyHorde()]
 let laserRays: Array<Laser> = []
 let laserRaysEnemy: Array<Laser> = []
+let stars: Array<Stars> = []
 
 function drawBoxPlayer(player1: Player) {
-    c!.fillStyle = '#000000'
-    c?.fillRect(player1.x, player1.y, player1.width, player1.height)
+    const img = new Image(); // Create new img element
+    img.src = 'spaceship.png'; // Set source path
+    c?.drawImage(img, player1.x, player1.y, player1.width, player1.height)
 }
+
+
 function drawBoxEnemies(enemies: Array<EnemyHorde>) {
     c!.fillStyle = '#F050F0'
     enemies.map((enemyHorde) =>
@@ -43,26 +48,59 @@ function drawBoxEnemies(enemies: Array<EnemyHorde>) {
             enemyArray.map(
                 (enemy) =>
                     enemy &&
-                    c?.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+                    // c?.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+                    c?.drawImage(enemy.image, enemy.x, enemy.y, enemy.width, enemy.height)
+
             )
         )
     )
 }
 
+function addStar(stars: Array<Stars>, yPos:number) {
+    var xPos = Math.floor(Math.random() * (canvas.width + 2))
+    var newStar = new Stars(xPos, yPos, Math.random()*2)
+    stars.push(newStar)
+    return stars
+}
+
+for (let i = 0; i < canvas.height; i++){
+    stars = addStar(stars, i)
+}
+
+function drawStars(stars: Array<Stars>) {
+    c!.fillStyle = 'white'
+    stars = addStar(stars, canvas.height)
+    for (let star of stars) {
+        c?.beginPath()
+        c?.arc(star.xPos, star.yPos, star.radius, 0, 2*Math.PI)
+        c?.fill()
+        star.yPos -= 1
+    }
+}
+
 function drawLasers(lasers: Array<Laser>) {
     c!.fillStyle = '#c30010'
+    const img = new Image(); // Create new img element
+    img.src = 'RedLaser.jpg'; // Set source path
+    
     lasers &&
         lasers.map((laser) =>
-            c?.fillRect(laser.x, laser.y, laser.width, laser.height)
+        // c?.fillRect(laser.x, laser.y, laser.width, laser.height)
+        c?.drawImage(laser.image, laser.x, laser.y, laser.width, laser.height * 2)
         )
 }
 
 function draw() {
     c?.clearRect(0, 0, canvas.width, canvas.height)
+    c!.fillStyle = "black"
+    c?.fillRect(0,0, canvas.width, canvas.height)
+    stars && drawStars(stars)
+
     drawBoxPlayer(player1)
     enemies && drawBoxEnemies(enemies)
     laserRays && drawLasers(laserRays)
     laserRaysEnemy && drawLasers(laserRaysEnemy)
+
     if (c) { c.font = "48px serif" }
     c?.fillText(`${player1.health}`, 100, 50, 100)
 }
@@ -84,7 +122,8 @@ function updateLasers(laserCounter: number, player1: Player) {
             new Laser({
                 x: player1.x + player1.width / 2,
                 y: player1.y,
-                speed: 10
+                speed: 10,
+                shooter: "player"
             })
         )
         return 0
@@ -158,6 +197,7 @@ let laserCounter = 1
 let swarmTimer = 0
 let swarmInterval = 1000
 let shootChance = 1000
+let gameOver = false
 
 function loop() {
     updatePlayer()
@@ -173,8 +213,14 @@ function loop() {
         enemies.push(new EnemyHorde())
         swarmTimer = 0
     }
+
     draw()
-    window.requestAnimationFrame(loop)
+    if (player1.health !== 0) {
+        window.requestAnimationFrame(loop)
+    }
 }
+
+var startGame = false
+
 
 loop()
