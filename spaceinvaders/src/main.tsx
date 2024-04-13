@@ -1,5 +1,4 @@
 import Player from './Player/player'
-import Enemy from './Enemy/enemy'
 import Board from './Board/board'
 import Laser from './Laser/laser'
 import EnemyHorde from './Enemy/enemyHorde'
@@ -36,8 +35,8 @@ let laserRaysEnemy: Array<Laser> = []
 let stars: Array<Stars> = []
 
 function drawBoxPlayer(player1: Player) {
-    const img = new Image(); // Create new img element
-    img.src = 'spaceship.png'; // Set source path
+    const img = new Image()
+    img.src = 'spaceship.png'
     c?.drawImage(img, player1.x, player1.y, player1.width, player1.height)
 }
 
@@ -50,7 +49,6 @@ function drawBoxEnemies(enemies: Array<EnemyHorde>) {
                 (enemy) =>
                     enemy &&
                     c?.drawImage(enemy.image, enemy.x, enemy.y, enemy.width, enemy.height)
-
             )
         )
     )
@@ -102,22 +100,16 @@ function drawExplosions() {
     }
 }
 
-function draw() {
-    c?.clearRect(0, 0, canvas.width, canvas.height)
-    c!.fillStyle = "black"
-    c?.fillRect(0,0, canvas.width, canvas.height)
-    stars && drawStars(stars)
-
-    drawBoxPlayer(player1)
-    enemies && drawBoxEnemies(enemies)
-    laserRays && drawLasers(laserRays)
-    laserRaysEnemy && drawLasers(laserRaysEnemy)
-    board.explosions && drawExplosions()
-
-    if (c) { c.font = "48px serif" }
-    c?.fillText(`${player1.health}`, 100, 50, 100)
-    c?.fillText(`${player1.score}`, 100, canvas.height - 50, 100)
+function drawScore() {
+    console.log(board.scores)
+    for (let score of board.scores) {
+        score.draw(c)
+    }
+    if (board.scores.length !== 0) {
+        board.scores = board.scores.filter((score) => score.alpha >= 0.06)
+    }
 }
+
 
 function updatePlayer() {
     player1.move(keys, canvas)
@@ -142,7 +134,6 @@ function updateLasers(laserCounter: number, player1: Player) {
         )
         return 0
     }
-
     laserRays && laserRays.map((laser) => (laser.y -= 10))
     laserRaysEnemy && laserRaysEnemy.map((laser) => (laser.y += 10))
     laserRays = laserRays.filter((laser) => checkLaserOffScreen(laser))
@@ -189,9 +180,7 @@ function updateEnemies() {
                 enemyHorde.moveHordeLeft()
             }
         }
-
         laserRaysEnemy = enemyHorde.shootLasers(laserRaysEnemy)
-
     }
 }
 
@@ -212,6 +201,25 @@ let swarmTimer = 0
 let swarmInterval = 1000
 let shootChance = 1000
 let gameOver = false
+
+
+function draw() {
+    c?.clearRect(0, 0, canvas.width, canvas.height)
+    c!.fillStyle = "black"
+    c?.fillRect(0,0, canvas.width, canvas.height)
+    stars && drawStars(stars)
+
+    drawBoxPlayer(player1)
+    enemies && drawBoxEnemies(enemies)
+    laserRays && drawLasers(laserRays)
+    laserRaysEnemy && drawLasers(laserRaysEnemy)
+    board.explosions && drawExplosions()
+    board.scores && drawScore()
+
+    if (c) { c.font = "48px serif" }
+    c?.fillText(`${player1.health}`, 100, 50, 100)
+    c?.fillText(`${player1.score}`, 100, canvas.height - 50, 100)
+}
 
 function loop() {
     updatePlayer()
@@ -238,3 +246,5 @@ var startGame = false
 
 
 loop()
+
+

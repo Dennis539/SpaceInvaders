@@ -68,12 +68,12 @@ export default class Player {
 
     checkLaserCollision(laserRays: Array<Laser>, board: Board) {
         const anyCollision = laserRays.some((laser) =>
-            board.checkCollision(this, "isPlayer", laser)
+            board.checkCollision(this, "isPlayer", laser, true)
         )
         if (anyCollision) {
             console.log('collide')
             laserRays = laserRays.filter(
-                (laser) => !board.checkCollision(this, "isPlayer", laser)
+                (laser) => !board.checkCollision(this, "isPlayer", laser, false)
             )
             this.health -= 1
             return laserRays

@@ -2,6 +2,7 @@ import Laser from '../Laser/laser'
 import Enemy from '../Enemy/enemy'
 import Player from '../Player/player'
 import Particle from '../Particle/particle'
+import Score from '../Score/score'
 
 
 export default class Board {
@@ -11,6 +12,7 @@ export default class Board {
     boundaryRight: number
     enemyDirection: string
     explosions: Array<Array<Particle>>
+    scores: Array<Score>
     constructor(canvas: any) {
         this.boundaryUp = 0
         this.boundaryDown = canvas.height
@@ -18,9 +20,10 @@ export default class Board {
         this.boundaryRight = canvas.width
         this.enemyDirection = 'right'
         this.explosions = []
+        this.scores = []
     }
 
-    checkCollision(target: Enemy | Player, targetType: string,  laser: Laser) {
+    checkCollision(target: Enemy | Player, targetType: string,  laser: Laser, checking: boolean) {
         const targetLeft = target.x
         const targetRight = target.x + target.width
         const targetBottom = target.y + target.height
@@ -36,7 +39,11 @@ export default class Board {
                 (laserRight >= targetLeft && laserRight <= targetRight))
         ) {
             console.log('Hitmarker')
-            this.explosions.push(this.createExplosion(target))
+            if (checking) {
+                this.explosions.push(this.createExplosion(target))
+                this.scores.push(new Score(target.x, target.y))
+            }
+
 
             return true
         } else if (targetType === "isPlayer" &&
