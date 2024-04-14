@@ -6,12 +6,12 @@ export default class Score {
     score: number
     x: number
     y: number
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number, score: number) {
         this.alpha = 0.06
         this.alphaMax = 1
         this.fadeIn = true
         this.fadeOut = false
-        this.score = 100
+        this.score = score
         this.x = x
         this.y = y
     }

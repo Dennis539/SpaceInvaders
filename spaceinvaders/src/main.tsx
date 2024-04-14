@@ -3,7 +3,7 @@ import Board from './Board/board'
 import Laser from './Laser/laser'
 import EnemyHorde from './Enemy/enemyHorde'
 import Stars from './Stars/stars'
-import Particle from './Particle/particle'
+import Bomb from './Bomb/bomb'
 
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
@@ -101,7 +101,6 @@ function drawExplosions() {
 }
 
 function drawScore() {
-    console.log(board.scores)
     for (let score of board.scores) {
         score.draw(c)
     }
@@ -110,6 +109,41 @@ function drawScore() {
     }
 }
 
+function addBomb() {
+    var x = Math.floor(Math.random() * (canvas.width + 2-100))
+    var y = Math.floor(Math.random() * (canvas.height + 2))
+
+    board.bombs.push(new Bomb(x, y))
+}
+
+
+function drawBombs() {
+    const bombs = board.bombs
+    bombs.forEach((bomb, i) => {
+        bomb.update(canvas)
+        laserRays.forEach((laser, j) => {
+            if (board.checkCollisionBomb(bomb, laser)) {
+                board.bombs.splice(i, 1)
+                laserRays.splice(j, 1)
+
+            }
+        })
+        bomb.draw(c)
+    })
+}
+
+function drawBombExplosions() {
+    board.bombExplosions.forEach((bombExplosion, i) => {
+        bombExplosion.update(c)
+    })
+    for (let enemyHorde of enemies) {
+        for (let bombExplosion of board.bombExplosions) {
+            enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map((enemyArray) =>
+                enemyArray.filter((enemy) => enemy && !board.checkCollisionExplosion(enemy, bombExplosion)))
+        }
+    }
+    board.bombExplosions = board.bombExplosions.filter((bombExplosion) => bombExplosion.radius < 300)
+}
 
 function updatePlayer() {
     player1.move(keys, canvas)
@@ -187,7 +221,7 @@ function updateEnemies() {
 function collision(laserRays: Array<Laser>) {
     if (laserRays.length !== 0) {
         for (let enemyHorde of enemies) {
-            laserRays = enemyHorde.checkHordeLaserCollision(laserRays, board, player1)
+            laserRays = enemyHorde.checkHordeLaserCollision(laserRays, board)
             if (laserRays.length === 0) {
                 return laserRays
             }
@@ -200,6 +234,7 @@ let laserCounter = 1
 let swarmTimer = 0
 let swarmInterval = 1000
 let shootChance = 1000
+let bombSpawnRate = 0
 let gameOver = false
 
 
@@ -215,16 +250,17 @@ function draw() {
     laserRaysEnemy && drawLasers(laserRaysEnemy)
     board.explosions && drawExplosions()
     board.scores && drawScore()
+    board.bombs && drawBombs()
+    board.bombExplosions && drawBombExplosions()
 
     if (c) { c.font = "48px serif" }
     c?.fillText(`${player1.health}`, 100, 50, 100)
-    c?.fillText(`${player1.score}`, 100, canvas.height - 50, 100)
+    c?.fillText(`${board.score}`, 100, canvas.height - 50, 100)
 }
 
 function loop() {
     updatePlayer()
     laserCounter = updateLasers(laserCounter, player1)
-
     updateEnemies()
     if (laserRaysEnemy.length !== 0) {
         laserRaysEnemy = player1.checkLaserCollision(laserRaysEnemy, board)
@@ -235,6 +271,12 @@ function loop() {
         enemies.push(new EnemyHorde())
         swarmTimer = 0
     }
+    if (bombSpawnRate >= 100 && board.bombs.length < 2) {
+        addBomb()
+        bombSpawnRate = 0
+    }
+
+    bombSpawnRate += 1
 
     draw()
     if (player1.health !== 0) {

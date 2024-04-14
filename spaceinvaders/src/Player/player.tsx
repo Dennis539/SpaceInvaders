@@ -17,7 +17,6 @@ export default class Player {
     speed: number
     direction: string
     health: number
-    score: number
     constructor(options: Options) {
         this.x = options.x
         this.y = options.y
@@ -26,7 +25,6 @@ export default class Player {
         this.speed = options.speed
         this.direction = 'right'
         this.health = 10
-        this.score = 0
     }
 
     move(keys: any, canvas: any) {

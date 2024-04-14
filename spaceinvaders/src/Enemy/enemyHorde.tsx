@@ -76,7 +76,7 @@ export default class EnemyHorde {
         return edgiestEnemy
     }
 
-    checkHordeLaserCollision(laserRays: Array<Laser>, board: Board, player1: Player) {
+    checkHordeLaserCollision(laserRays: Array<Laser>, board: Board) {
         for (let i = 0; i < this.enemiesMatrix.length; i++) {
             for (let j = 0; j < this.enemiesMatrix[i].length; j++) {
                 var enemy = this.enemiesMatrix[i][j]
@@ -86,7 +86,7 @@ export default class EnemyHorde {
                     laserRays = values.lasers
                     if (collide) {
                         this.enemiesMatrix[i][j] = null
-                        player1.score += 100
+                        board.score += 100
                     }
                 }
             }
