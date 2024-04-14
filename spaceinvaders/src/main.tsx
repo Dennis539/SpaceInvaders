@@ -4,6 +4,14 @@ import Laser from './Laser/laser'
 import EnemyHorde from './Enemy/enemyHorde'
 import Stars from './Stars/stars'
 import Bomb from './Bomb/bomb'
+import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
+
+
+
+
+
+
+
 
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
@@ -33,6 +41,7 @@ let enemies: Array<EnemyHorde> = [new EnemyHorde()]
 let laserRays: Array<Laser> = []
 let laserRaysEnemy: Array<Laser> = []
 let stars: Array<Stars> = []
+let machineGunPowerUp: MachineGunPowerUp | null
 
 function drawBoxPlayer(player1: Player) {
     const img = new Image()
@@ -125,7 +134,6 @@ function drawBombs() {
             if (board.checkCollisionBomb(bomb, laser)) {
                 board.bombs.splice(i, 1)
                 laserRays.splice(j, 1)
-
             }
         })
         bomb.draw(c)
@@ -156,8 +164,8 @@ function checkLaserOffScreen(laser: Laser) {
     return true
 }
 
-function updateLasers(laserCounter: number, player1: Player) {
-    if (' ' in keys && laserCounter > 10) {
+function updateLasers(laserCounter: number, laserFrequency: number, player1: Player) {
+    if (' ' in keys && laserCounter > board.laserFrequency) {
         laserRays.push(
             new Laser({
                 x: player1.x + player1.width / 2,
@@ -230,13 +238,17 @@ function collision(laserRays: Array<Laser>) {
     return laserRays
 }
 
-let laserCounter = 1
-let swarmTimer = 0
-let swarmInterval = 1000
-let shootChance = 1000
-let bombSpawnRate = 0
-let gameOver = false
+function drawMachineGunPowerUp() {
+    machineGunPowerUp?.update(c)
+    for (let laser of laserRays) {
+        if (machineGunPowerUp && board.checkCollisionPowerUp(machineGunPowerUp, laser)) {
+            machineGunPowerUp = null
+            spawnPowerUp = 0
 
+        }
+    
+    }
+}
 
 function draw() {
     c?.clearRect(0, 0, canvas.width, canvas.height)
@@ -252,15 +264,24 @@ function draw() {
     board.scores && drawScore()
     board.bombs && drawBombs()
     board.bombExplosions && drawBombExplosions()
+    machineGunPowerUp && drawMachineGunPowerUp()
 
     if (c) { c.font = "48px serif" }
     c?.fillText(`${player1.health}`, 100, 50, 100)
     c?.fillText(`${board.score}`, 100, canvas.height - 50, 100)
 }
 
+let laserCounter = 1
+let swarmTimer = 0
+let swarmInterval = 1000
+let shootChance = 1000
+let bombSpawnRate = 0
+let gameOver = false
+let spawnPowerUp = 0
+
 function loop() {
     updatePlayer()
-    laserCounter = updateLasers(laserCounter, player1)
+    laserCounter = updateLasers(laserCounter, board.laserFrequency, player1)
     updateEnemies()
     if (laserRaysEnemy.length !== 0) {
         laserRaysEnemy = player1.checkLaserCollision(laserRaysEnemy, board)
@@ -275,8 +296,23 @@ function loop() {
         addBomb()
         bombSpawnRate = 0
     }
+    if (spawnPowerUp >= 100 && !machineGunPowerUp && !board.powerUpOn) {
+        var x = Math.floor(Math.random() * (canvas.width + 2-30))
+        var y = Math.floor(Math.random() * ((canvas.height/2 )+ 2))
+        machineGunPowerUp = new MachineGunPowerUp(y - 30)
+    }
+
+    if (board.powerUpOn) {
+        board.checkPowerUp()
+    }
+
+    if (machineGunPowerUp && (machineGunPowerUp.x -30 >= canvas.width)) {
+        machineGunPowerUp = null
+        spawnPowerUp = 0
+    }
 
     bombSpawnRate += 1
+    spawnPowerUp += 1
 
     draw()
     if (player1.health !== 0) {
@@ -288,5 +324,11 @@ var startGame = false
 
 
 loop()
+
+
+
+
+
+
 
 

@@ -5,6 +5,7 @@ import Particle from '../Particle/particle'
 import Score from '../Score/score'
 import Bomb from '../Bomb/bomb'
 import BombExplosion from '../Bomb/bombExplosion'
+import MachineGunPowerUp from '../PowerUp/machineGunPowerUp'
 
 
 export default class Board {
@@ -18,6 +19,9 @@ export default class Board {
     bombs: Array<Bomb>
     bombExplosions: Array<BombExplosion>
     score: number
+    powerUpOn: boolean
+    powerUpTimer: number
+    laserFrequency: number
     constructor(canvas: any) {
         this.boundaryUp = 0
         this.boundaryDown = canvas.height
@@ -29,6 +33,10 @@ export default class Board {
         this.bombs = []
         this.bombExplosions = []
         this.score = 0
+        this.powerUpOn = false
+        this.powerUpTimer = 0
+        this.laserFrequency = 10
+
     }
 
     checkCollision(target: Enemy | Player, targetType: string,  laser: Laser, checking: boolean) {
@@ -67,7 +75,6 @@ export default class Board {
     }
 
     checkCollisionBomb(target: Bomb, laser: Laser) {
-
         var testX = target.x
         var testY = target.y
         if (target.x < laser.x) {
@@ -89,6 +96,40 @@ export default class Board {
             return true
         }
         return false
+    }
+
+    checkCollisionPowerUp(PowerUp: MachineGunPowerUp, laser: Laser) {
+        var testX = PowerUp.x
+        var testY = PowerUp.y
+        if (PowerUp.x < laser.x) {
+            testX = laser.x
+        } else if (PowerUp.x >= laser.x + laser.width) {
+            testX = laser.x + laser.width
+        }
+        if (PowerUp.y < laser.y) {
+            testY = laser.y
+        } else if (PowerUp.y > laser.y + laser.height) {
+            testY = laser.y + laser.height
+        }
+        const distX = PowerUp.x - testX
+        const distY = PowerUp.y - testY
+        const distance = Math.sqrt((distX * distX) + (distY * distY))
+        if (distance <= PowerUp.radius) {
+            console.log("Power On")
+            this.powerUpOn = true
+            this.laserFrequency = 2
+            return true
+        }
+        return false
+    }
+
+    checkPowerUp() {
+        if (this.powerUpTimer > 1000) {
+            this.powerUpOn = false
+            this.laserFrequency = 10
+            this.powerUpTimer = 0
+        }
+        this.powerUpTimer += 1
     }
 
     checkCollisionExplosion(enemy: Enemy, bombExplosion: BombExplosion) {
