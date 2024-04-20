@@ -1,3 +1,5 @@
+import React, {useEffect} from 'react'
+
 import Player from './Player/player'
 import Board from './Board/board'
 import Laser from './Laser/laser'
@@ -281,6 +283,7 @@ let bombSpawnRate = 0
 let gameOver = false
 let spawnPowerUp = 0
 
+
 function loop() {
     updatePlayer()
     laserCounter = updateLasers(laserCounter, board.laserFrequency, player1)
@@ -319,13 +322,21 @@ function loop() {
     draw()
     if (player1.health !== 0) {
         window.requestAnimationFrame(loop)
+    } else {
+        document.getElementById('SplashScreen')!.style.display = 'block';
+        document.getElementById('GameCanvas')!.style.display = 'none';
     }
 }
 
-var startGame = false
-
+var scripts = document.getElementsByTagName('script')
+console.log(scripts[scripts.length-1].getAttribute("gameStart"))
 
 loop()
+
+
+
+
+
 
 
 

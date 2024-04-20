@@ -2,18 +2,14 @@
     <head> </head>
     <body style="margin: 0">
         <div id="SplashScreen">
-            <input id="StartButton" type="button" value="Start" style="display: block;"/>
+            <div id="startButton"></div>
+            <script src="src/startScreen/startButton.tsx" type="module"></script>
+
         </div>
 
         <canvas id="GameCanvas" background-color="black" style="display: none;">
-            <script src="src/main.tsx" type="module"></script>
+            <script src="src/main.tsx" type="module" gameStart="false"></script>
         </canvas>
 
-        <script>
-            document.getElementById('StartButton').addEventListener('click', function () {
-                document.getElementById('SplashScreen').style.display = 'none';
-                document.getElementById('GameCanvas').style.display = 'block';
-            })
-        </script>
     </body>
 </html>
