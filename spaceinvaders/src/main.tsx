@@ -267,6 +267,8 @@ function draw() {
     machineGunPowerUp && drawMachineGunPowerUp()
 
     if (c) { c.font = "48px serif" }
+    c!.fillStyle = "#00ff00"
+
     c?.fillText(`${player1.health}`, 100, 50, 100)
     c?.fillText(`${board.score}`, 100, canvas.height - 50, 100)
 }
