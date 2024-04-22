@@ -1,14 +1,14 @@
 import ReactDOM from 'react-dom/client';
 
 const buttonStyle = {
-    backgroundColor: 'blue', // Background color of the button
-    color: 'white',          // Text color of the button
-    padding: '10px 20px',    // Padding inside the button
-    border: 'none',          // No border for the button
-    borderRadius: '5px',     // Rounded corners of the button
-    cursor: 'pointer',       // Cursor changes to pointer on hover
-    fontSize: '16px'         // Font size of the text
-};
+    backgroundColor: 'blue',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px'
+}
 
 const StartButton = () => {
     const clickStart = () => {
