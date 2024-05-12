@@ -11,10 +11,6 @@ import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
 
 
 
-
-
-
-
 let canvas = document.querySelector('canvas')!
 const c = canvas?.getContext('2d')
 canvas.width = window.innerWidth

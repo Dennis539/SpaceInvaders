@@ -31,4 +31,4 @@ root.render(
     <StartButton />
 );
 
-// export default StartButton
+export default StartButton
