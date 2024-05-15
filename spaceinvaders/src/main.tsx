@@ -13,6 +13,8 @@ import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
 
 let canvas = document.querySelector('canvas')!
 let GameOverModelEl = document.getElementById('GameOverModelEl')!
+let GameOverScoreEL = document.getElementById('GameOverScoreEL')!
+let RestartButtonEL = document.getElementById('RestartButtonEL')!
 const c = canvas?.getContext('2d')
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
@@ -321,12 +323,16 @@ function loop() {
         window.requestAnimationFrame(loop)
     } else {
         GameOverModelEl.style.display = 'block';
+        GameOverScoreEL.innerHTML = `${board.score}`
     }
 }
 
 var scripts = document.getElementsByTagName('script')
 console.log(scripts[scripts.length-1].getAttribute("gameStart"))
 
+RestartButtonEL.addEventListener("click", () => {
+    
+})
 loop()
 
 
