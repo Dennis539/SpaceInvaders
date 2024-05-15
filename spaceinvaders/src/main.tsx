@@ -12,6 +12,7 @@ import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
 
 
 let canvas = document.querySelector('canvas')!
+let GameOverModelEl = document.getElementById('GameOverModelEl')!
 const c = canvas?.getContext('2d')
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
@@ -319,8 +320,7 @@ function loop() {
     if (player1.health !== 0) {
         window.requestAnimationFrame(loop)
     } else {
-        document.getElementById('SplashScreen')!.style.display = 'block';
-        document.getElementById('GameCanvas')!.style.display = 'none';
+        GameOverModelEl.style.display = 'block';
     }
 }
 
