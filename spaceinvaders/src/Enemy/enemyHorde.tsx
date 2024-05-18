@@ -96,11 +96,10 @@ export default class EnemyHorde {
 
     shootLasers(laserRaysEnemy: Array<Laser>) {
         for (let matrixArray of this.enemiesMatrix) {
-            for (let i = 0; i < matrixArray.length - 1; i++) {
+            for (let i = 0; i < matrixArray.length; i++) {
                 if (
-                    matrixArray[i] !== null &&
-                    (matrixArray[i + 1] === null ||
-                        i === matrixArray.length - 2)
+                    matrixArray[i] !== null
+
                 ) {
                     if (matrixArray[i]!.shootLaser()) {
                         const xLaser =
