@@ -28,21 +28,55 @@ window.addEventListener('keyup', function (e) {
     delete keys[e.key]
 })
 
-const board = new Board(canvas)
+let enemies: Array<EnemyHorde> = [new EnemyHorde()]
+let laserRays: Array<Laser> = []
+let laserRaysEnemy: Array<Laser> = []
+let stars: Array<Stars> = []
+let machineGunPowerUp: MachineGunPowerUp | null
 
-const player1 = new Player({
+
+let board = new Board(canvas)
+let player1 = new Player({
     x: canvas.width / 2,
     y: canvas.height - 200,
     width: 50,
     height: 50,
     speed: 5
 })
+let laserCounter = 1
+let swarmTimer = 0
+let swarmInterval = 1000
+let shootChance = 1000
+let bombSpawnRate = 0
+let gameOver = false
+let spawnPowerUp = 0
 
-let enemies: Array<EnemyHorde> = [new EnemyHorde()]
-let laserRays: Array<Laser> = []
-let laserRaysEnemy: Array<Laser> = []
-let stars: Array<Stars> = []
-let machineGunPowerUp: MachineGunPowerUp | null
+for (let i = 0; i < canvas.height; i++){
+    stars = addStar(stars, i)
+}
+
+function init() {
+    enemies = [new EnemyHorde()]
+    laserRays = []
+    laserRaysEnemy = []
+    stars = []
+    board = new Board(canvas)
+    player1 = new Player({
+        x: canvas.width / 2,
+        y: canvas.height - 200,
+        width: 50,
+        height: 50,
+        speed: 5
+    })
+    laserCounter = 1
+    swarmTimer = 0
+    swarmInterval = 1000
+    shootChance = 1000
+    bombSpawnRate = 0
+    gameOver = false
+    spawnPowerUp = 0
+}
+
 
 function drawBoxPlayer(player1: Player) {
     const img = new Image()
@@ -71,9 +105,7 @@ function addStar(stars: Array<Stars>, yPos:number) {
     return stars
 }
 
-for (let i = 0; i < canvas.height; i++){
-    stars = addStar(stars, i)
-}
+
 
 function drawStars(stars: Array<Stars>) {
     c!.fillStyle = 'white'
@@ -274,14 +306,6 @@ function draw() {
     c?.fillText(`${board.score}`, 100, canvas.height - 50, 100)
 }
 
-let laserCounter = 1
-let swarmTimer = 0
-let swarmInterval = 1000
-let shootChance = 1000
-let bombSpawnRate = 0
-let gameOver = false
-let spawnPowerUp = 0
-
 
 function loop() {
     updatePlayer()
@@ -331,7 +355,13 @@ var scripts = document.getElementsByTagName('script')
 console.log(scripts[scripts.length-1].getAttribute("gameStart"))
 
 RestartButtonEL.addEventListener("click", () => {
-    
+    init()
+    loop()
+    for (let i = 0; i < canvas.height; i++){
+        stars = addStar(stars, i)
+    }
+    GameOverModelEl.style.display = 'none';
+
 })
 loop()
 
