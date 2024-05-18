@@ -15,6 +15,7 @@ let canvas = document.querySelector('canvas')!
 let GameOverModelEl = document.getElementById('GameOverModelEl')!
 let GameOverScoreEL = document.getElementById('GameOverScoreEL')!
 let RestartButtonEL = document.getElementById('RestartButtonEL')!
+let StartModelEl = document.getElementById('StartModelEl')!
 const c = canvas?.getContext('2d')
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
@@ -351,8 +352,15 @@ function loop() {
     }
 }
 
-var scripts = document.getElementsByTagName('script')
-console.log(scripts[scripts.length-1].getAttribute("gameStart"))
+function preDraw() {
+    c?.clearRect(0, 0, canvas.width, canvas.height)
+    c!.fillStyle = "black"
+    c?.fillRect(0,0, canvas.width, canvas.height)
+    stars && drawStars(stars)
+    const requestId = window.requestAnimationFrame(preDraw)
+}
+
+const requestId = window.requestAnimationFrame(preDraw)
 
 RestartButtonEL.addEventListener("click", () => {
     init()
@@ -361,9 +369,13 @@ RestartButtonEL.addEventListener("click", () => {
         stars = addStar(stars, i)
     }
     GameOverModelEl.style.display = 'none';
-
+    cancelAnimationFrame(requestId)
 })
-loop()
+
+StartModelEl.addEventListener("click", () => {
+    loop()
+    StartModelEl.style.display = "none"
+})
 
 
 
