@@ -12,13 +12,14 @@ import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
 
 
 let canvas = document.querySelector('canvas')!
+const c = canvas?.getContext('2d')
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
+
 let GameOverModelEl = document.getElementById('GameOverModelEl')!
 let GameOverScoreEL = document.getElementById('GameOverScoreEL')!
 let RestartButtonEL = document.getElementById('RestartButtonEL')!
 let StartModelEl = document.getElementById('StartModelEl')!
-const c = canvas?.getContext('2d')
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
 
 var keys: any = {}
 window.addEventListener('keydown', function (e) {
