@@ -176,7 +176,7 @@ function drawBombs() {
 }
 
 function drawBombExplosions() {
-    board.bombExplosions.forEach((bombExplosion, i) => {
+    board.bombExplosions.forEach((bombExplosion) => {
         bombExplosion.update(c)
     })
     for (let enemyHorde of enemies) {
