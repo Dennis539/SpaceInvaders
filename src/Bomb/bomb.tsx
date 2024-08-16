@@ -21,7 +21,7 @@ export default class Bomb {
     draw(c: any) {
         c.fillStyle = 'red';
         c.save();
-        this.updateAlpha(c)
+        this.updateAlpha()
         c.globalAlpha = this.alpha;
         c.beginPath();
  
@@ -47,7 +47,7 @@ export default class Bomb {
         return dir < 0.5 ? -2 : 2
     }
 
-    updateAlpha (c: any) {
+    updateAlpha () {
         // fade in
         if(this.fadeIn && this.alpha < 1){
             this.alpha += 0.01

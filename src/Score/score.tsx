@@ -24,7 +24,7 @@ export default class Score {
     
     draw(c: any) {
         c.save();
-        this.updateAlpha(c)
+        this.updateAlpha()
         c.globalAlpha = this.alpha;
         c.fillStyle = 'lightgray';
         c?.fillText(`${this.score}`, this.x, this.y)
@@ -34,7 +34,7 @@ export default class Score {
         c.restore();
     }
 
-    updateAlpha (c: any) {
+    updateAlpha () {
         // fade in
         if(this.fadeIn && this.alpha < this.alphaMax){
             this.alpha += 0.02

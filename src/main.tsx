@@ -199,7 +199,7 @@ function checkLaserOffScreen(laser: Laser) {
     return true
 }
 
-function updateLasers(laserCounter: number, laserFrequency: number, player1: Player) {
+function updateLasers(laserCounter: number, player1: Player) {
     if (' ' in keys && laserCounter > board.laserFrequency) {
         laserRays.push(
             new Laser({
@@ -311,7 +311,7 @@ function draw() {
 
 function loop() {
     updatePlayer()
-    laserCounter = updateLasers(laserCounter, board.laserFrequency, player1)
+    laserCounter = updateLasers(laserCounter, player1)
     updateEnemies()
     if (laserRaysEnemy.length !== 0) {
         laserRaysEnemy = player1.checkLaserCollision(laserRaysEnemy, board)
