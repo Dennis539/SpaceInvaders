@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+// import React, {useEffect} from 'react'
 
 import Player from './Player/player'
 import Board from './Board/board'
