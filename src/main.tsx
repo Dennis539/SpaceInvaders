@@ -1,32 +1,29 @@
 // import React, {useEffect} from 'react'
 
-import Player from './Player/player'
-import Board from './Board/board'
-import Laser from './Laser/laser'
-import EnemyHorde from './Enemy/enemyHorde'
-import Stars from './Stars/stars'
-import Bomb from './Bomb/bomb'
-import MachineGunPowerUp from './PowerUp/machineGunPowerUp'
+import Player from "./Player/player"
+import Board from "./Board/board"
+import Laser from "./Laser/laser"
+import EnemyHorde from "./Enemy/enemyHorde"
+import Stars from "./Stars/stars"
+import Bomb from "./Bomb/bomb"
+import MachineGunPowerUp from "./PowerUp/machineGunPowerUp"
 
-
-
-
-let canvas = document.querySelector('canvas')!
-const c = canvas?.getContext('2d')
+let canvas = document.querySelector("canvas")!
+const c = canvas?.getContext("2d")
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-let GameOverModelEl = document.getElementById('GameOverModelEl')!
-let GameOverScoreEL = document.getElementById('GameOverScoreEL')!
-let RestartButtonEL = document.getElementById('RestartButtonEL')!
-let StartModelEl = document.getElementById('StartModelEl')!
+let GameOverModelEl = document.getElementById("GameOverModelEl")!
+let GameOverScoreEL = document.getElementById("GameOverScoreEL")!
+let RestartButtonEL = document.getElementById("RestartButtonEL")!
+let StartModelEl = document.getElementById("StartModelEl")!
 
 var keys: any = {}
-window.addEventListener('keydown', function (e) {
+window.addEventListener("keydown", function (e) {
     keys[e.key] = true
     e.preventDefault()
 })
-window.addEventListener('keyup', function (e) {
+window.addEventListener("keyup", function (e) {
     delete keys[e.key]
 })
 
@@ -35,7 +32,6 @@ let laserRays: Array<Laser> = []
 let laserRaysEnemy: Array<Laser> = []
 let stars: Array<Stars> = []
 let machineGunPowerUp: MachineGunPowerUp | null
-
 
 let board = new Board(canvas)
 let player1 = new Player({
@@ -53,7 +49,7 @@ let bombSpawnRate = 0
 let gameOver = false
 let spawnPowerUp = 0
 
-for (let i = 0; i < canvas.height; i++){
+for (let i = 0; i < canvas.height; i++) {
     stars = addStar(stars, i)
 }
 
@@ -79,68 +75,76 @@ function init() {
     spawnPowerUp = 0
 }
 
-
 function drawBoxPlayer(player1: Player) {
     const img = new Image()
-    img.src = 'spaceship.png'
+    img.src = "spaceship.png"
     c?.drawImage(img, player1.x, player1.y, player1.width, player1.height)
 }
 
-
 function drawBoxEnemies(enemies: Array<EnemyHorde>) {
-    c!.fillStyle = '#F050F0'
+    c!.fillStyle = "#F050F0"
     enemies.map((enemyHorde) =>
         enemyHorde.enemiesMatrix.map((enemyArray) =>
             enemyArray.map(
                 (enemy) =>
                     enemy &&
-                    c?.drawImage(enemy.image, enemy.x, enemy.y, enemy.width, enemy.height)
+                    c?.drawImage(
+                        enemy.image,
+                        enemy.x,
+                        enemy.y,
+                        enemy.width,
+                        enemy.height
+                    )
             )
         )
     )
 }
 
-function addStar(stars: Array<Stars>, yPos:number) {
+function addStar(stars: Array<Stars>, yPos: number) {
     var xPos = Math.floor(Math.random() * (canvas.width + 2))
-    var newStar = new Stars(xPos, yPos, Math.random()*2)
+    var newStar = new Stars(xPos, yPos, Math.random() * 2)
     stars.push(newStar)
     return stars
 }
 
-
-
 function drawStars(stars: Array<Stars>) {
-    c!.fillStyle = 'white'
+    c!.fillStyle = "white"
     stars = addStar(stars, canvas.height)
     for (let star of stars) {
         c?.beginPath()
-        c?.arc(star.xPos, star.yPos, star.radius, 0, 2*Math.PI)
+        c?.arc(star.xPos, star.yPos, star.radius, 0, 2 * Math.PI)
         c?.fill()
         star.yPos -= 1
     }
 }
 
 function drawLasers(lasers: Array<Laser>) {
-    c!.fillStyle = '#c30010'
-    const img = new Image(); // Create new img element
-    img.src = 'RedLaser.jpg'; // Set source path
-    
+    c!.fillStyle = "#c30010"
+    const img = new Image() // Create new img element
+    img.src = "RedLaser.jpg" // Set source path
+
     lasers &&
         lasers.map((laser) =>
-            c?.drawImage(laser.image, laser.x, laser.y, laser.width, laser.height * 2)
+            c?.drawImage(
+                laser.image,
+                laser.x,
+                laser.y,
+                laser.width,
+                laser.height * 2
+            )
         )
 }
 
 function drawExplosions() {
     var explosions = board.explosions
     for (let explosion of explosions) {
-        explosion.forEach((particle,i) => {
+        explosion.forEach((particle, i) => {
             if (particle.alpha <= 0) {
-                explosion.splice(i,1)
+                explosion.splice(i, 1)
             } else {
                 particle.update(c)
             }
-        });
+        })
     }
 }
 
@@ -154,12 +158,11 @@ function drawScore() {
 }
 
 function addBomb() {
-    var x = Math.floor(Math.random() * (canvas.width + 2-100))
+    var x = Math.floor(Math.random() * (canvas.width + 2 - 100))
     var y = Math.floor(Math.random() * (canvas.height + 2))
 
     board.bombs.push(new Bomb(x, y))
 }
-
 
 function drawBombs() {
     const bombs = board.bombs
@@ -181,11 +184,19 @@ function drawBombExplosions() {
     })
     for (let enemyHorde of enemies) {
         for (let bombExplosion of board.bombExplosions) {
-            enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map((enemyArray) =>
-                enemyArray.filter((enemy) => enemy && !board.checkCollisionExplosion(enemy, bombExplosion)))
+            enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map(
+                (enemyArray) =>
+                    enemyArray.filter(
+                        (enemy) =>
+                            enemy &&
+                            !board.checkCollisionExplosion(enemy, bombExplosion)
+                    )
+            )
         }
     }
-    board.bombExplosions = board.bombExplosions.filter((bombExplosion) => bombExplosion.radius < 300)
+    board.bombExplosions = board.bombExplosions.filter(
+        (bombExplosion) => bombExplosion.radius < 300
+    )
 }
 
 function updatePlayer() {
@@ -200,7 +211,7 @@ function checkLaserOffScreen(laser: Laser) {
 }
 
 function updateLasers(laserCounter: number, player1: Player) {
-    if (' ' in keys && laserCounter > board.laserFrequency) {
+    if (" " in keys && laserCounter > board.laserFrequency) {
         laserRays.push(
             new Laser({
                 x: player1.x + player1.width / 2,
@@ -219,7 +230,7 @@ function updateLasers(laserCounter: number, player1: Player) {
 
 function updateEnemies() {
     for (let enemyHorde of enemies) {
-        if (enemyHorde.direction === 'right') {
+        if (enemyHorde.direction === "right") {
             if (enemyHorde.checkHordeRightExists()) {
                 enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map(
                     (enemyArray) => enemyArray.slice(0, -1)
@@ -234,11 +245,11 @@ function updateEnemies() {
                     board.boundaryRight - rightEnemy.speed
             ) {
                 enemyHorde.moveHordeDown()
-                enemyHorde.direction = 'left'
+                enemyHorde.direction = "left"
             } else {
                 enemyHorde.moveHordeRight()
             }
-        } else if (enemyHorde.direction === 'left') {
+        } else if (enemyHorde.direction === "left") {
             if (enemyHorde.checkHordeLeftExists()) {
                 enemyHorde.enemiesMatrix = enemyHorde.enemiesMatrix.map(
                     (enemyArray) => enemyArray.slice(1)
@@ -252,7 +263,7 @@ function updateEnemies() {
                 leftEnemy.x < board.boundaryLeft + leftEnemy.speed
             ) {
                 enemyHorde.moveHordeDown()
-                enemyHorde.direction = 'right'
+                enemyHorde.direction = "right"
             } else {
                 enemyHorde.moveHordeLeft()
             }
@@ -276,19 +287,20 @@ function collision(laserRays: Array<Laser>) {
 function drawMachineGunPowerUp() {
     machineGunPowerUp?.update(c)
     for (let laser of laserRays) {
-        if (machineGunPowerUp && board.checkCollisionPowerUp(machineGunPowerUp, laser)) {
+        if (
+            machineGunPowerUp &&
+            board.checkCollisionPowerUp(machineGunPowerUp, laser)
+        ) {
             machineGunPowerUp = null
             spawnPowerUp = 0
-
         }
-    
     }
 }
 
 function draw() {
     c?.clearRect(0, 0, canvas.width, canvas.height)
     c!.fillStyle = "black"
-    c?.fillRect(0,0, canvas.width, canvas.height)
+    c?.fillRect(0, 0, canvas.width, canvas.height)
     stars && drawStars(stars)
 
     drawBoxPlayer(player1)
@@ -301,13 +313,14 @@ function draw() {
     board.bombExplosions && drawBombExplosions()
     machineGunPowerUp && drawMachineGunPowerUp()
 
-    if (c) { c.font = "48px serif" }
+    if (c) {
+        c.font = "48px serif"
+    }
     c!.fillStyle = "#00ff00"
 
     c?.fillText(`${player1.health}`, 100, 50, 100)
     c?.fillText(`${board.score}`, 100, canvas.height - 50, 100)
 }
-
 
 function loop() {
     updatePlayer()
@@ -327,8 +340,8 @@ function loop() {
         bombSpawnRate = 0
     }
     if (spawnPowerUp >= 100 && !machineGunPowerUp && !board.powerUpOn) {
-        var x = Math.floor(Math.random() * (canvas.width + 2-30))
-        var y = Math.floor(Math.random() * ((canvas.height/2 )+ 2))
+        var x = Math.floor(Math.random() * (canvas.width + 2 - 30))
+        var y = Math.floor(Math.random() * (canvas.height / 2 + 2))
         machineGunPowerUp = new MachineGunPowerUp(y - 30)
     }
 
@@ -336,7 +349,7 @@ function loop() {
         board.checkPowerUp()
     }
 
-    if (machineGunPowerUp && (machineGunPowerUp.x -30 >= canvas.width)) {
+    if (machineGunPowerUp && machineGunPowerUp.x - 30 >= canvas.width) {
         machineGunPowerUp = null
         spawnPowerUp = 0
     }
@@ -348,7 +361,7 @@ function loop() {
     if (player1.health !== 0) {
         window.requestAnimationFrame(loop)
     } else {
-        GameOverModelEl.style.display = 'block';
+        GameOverModelEl.style.display = "block"
         GameOverScoreEL.innerHTML = `${board.score}`
     }
 }
@@ -356,7 +369,7 @@ function loop() {
 function preDraw() {
     c?.clearRect(0, 0, canvas.width, canvas.height)
     c!.fillStyle = "black"
-    c?.fillRect(0,0, canvas.width, canvas.height)
+    c?.fillRect(0, 0, canvas.width, canvas.height)
     stars && drawStars(stars)
     const requestId = window.requestAnimationFrame(preDraw)
 }
@@ -366,27 +379,15 @@ const requestId = window.requestAnimationFrame(preDraw)
 RestartButtonEL.addEventListener("click", () => {
     init()
     loop()
-    for (let i = 0; i < canvas.height; i++){
+    for (let i = 0; i < canvas.height; i++) {
         stars = addStar(stars, i)
     }
-    GameOverModelEl.style.display = 'none';
+    GameOverModelEl.style.display = "none"
     cancelAnimationFrame(requestId)
 })
 
 StartModelEl.addEventListener("click", () => {
     loop()
     StartModelEl.style.display = "none"
+    cancelAnimationFrame(requestId)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
